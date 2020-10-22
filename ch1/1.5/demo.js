@@ -82,17 +82,26 @@ console.log(
 // Death by 1000 transaction fees
 function financialAttrition(...users) {
   // simulate 1000 transactions
-  // TODO
-  // pick a random value between 1 and 10
-  // TODO
-  // choose two users at random, but excluding Paypal
-  // TODO
-  // create a transaction from one random user to another
-  // TODO
-  // process the transaction
-  // TODO
-  // print Paypal's balance and/or the full state to the console every 100 iterations so we can see the progress
-  // TODO
+  for (i=0; i < 1000; i++) {
+    // pick a random value between 1 and 10
+    let amount = Math.floor((Math.random() * 10) + 1);
+    // choose two users at random, but excluding Paypal
+    let keys = Object.keys(paypal.state);
+    keys.splice(0, 1);
+    let user1 =  Math.floor((Math.random() * keys.length));
+    let user2 =  Math.floor((Math.random() * keys.length));
+    while (user1 == user2) {
+      user2 =  Math.floor((Math.random() * keys.length));
+    }
+    // create a transaction from one random user to another
+    let tx = users[user1].generateTx(users[user2].wallet.address, amount, 'send');
+    // process the transaction
+    paypal.processTx(tx);
+    // print Paypal's balance and/or the full state to the console every 100 iterations so we can see the progress
+    if (i%99 == 0) {
+      console.log(paypal.state);
+    }
+  }
 }
 
 financialAttrition(
@@ -117,6 +126,7 @@ console.log(
 console.log(
   "\nWell that was fun. But wait! There's more. It turns out that Eve was actually a space pirate, and Paypal is forbidden from serving space pirates. Upon hearing this news, Paypal adds Eve's address to the blacklist (duhn duhn duhn...). Eve is now banned from using Paypal or their services.",
 );
+console.log(eve.wallet.address);
 paypal.blacklist.push(eve.wallet.address);
 
 console.log("Let's see what happens now...");
